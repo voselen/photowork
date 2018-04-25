@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
-/**
+/** Аквити для отображения фрагментов с увеличенными фотографиями
  * Created by Elena on 21.04.2018.
  */
 

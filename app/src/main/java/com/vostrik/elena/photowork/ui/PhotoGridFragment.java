@@ -1,11 +1,9 @@
 package com.vostrik.elena.photowork.ui;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * Фрагемент, отображающий сетку с превью изображений
  * Created by Elena on 20.04.2018.
  */
 
@@ -45,11 +44,6 @@ public class PhotoGridFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate nextPage " + nextPage);
-        Resources resources = getResources();
-        DisplayMetrics dm = resources.getDisplayMetrics();
-        MainActivity.SCREEN_WIDTH = dm.widthPixels;
-        MainActivity.SCREEN_HEIGHT = dm.heightPixels;
-        MainActivity.SIZE_W = MainActivity.SIZE_H = MainActivity.SCREEN_WIDTH / 3;
     }
 
     @Override

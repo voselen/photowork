@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import com.vostrik.elena.photowork.util.ImageServiceUtil;
 import com.vostrik.elena.photowork.util.OnSwipeTouchListener;
 
 /**
+ * Фрагмент, отображающий увеличенное изображение
  * Created by Elena on 21.04.2018.
  */
 
@@ -33,10 +35,11 @@ public class FullImageFragment extends Fragment {
     Context context;
 
 
+
     public static FullImageFragment newInstance(int position) {
         final FullImageFragment f = new FullImageFragment();
-
         final Bundle args = new Bundle();
+
         photoItem = Application.vkPhotos.get(position);
         args.putParcelable(VK_PHOTO_IMAGE, photoItem);
         args.putInt(VK_PHOTO_IMAGE_POSITION, position);
@@ -61,6 +64,14 @@ public class FullImageFragment extends Fragment {
         progressBar = (ProgressBar) v.findViewById(R.id.bigPhotoProgressBar);
         textView = (TextView) v.findViewById(R.id.full_image_caption);
         textView.setText((position + 1) + " из " + Application.photoCount);
+        Button button = (Button)v.findViewById(R.id.back_button);
+        button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+
         v.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             @Override
             public void onSwipeDown() {
