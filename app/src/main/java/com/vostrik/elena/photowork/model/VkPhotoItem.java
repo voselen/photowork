@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vk.sdk.api.model.VKApiPhoto;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,6 +26,10 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
     @JsonProperty("id")
     public long id;
 
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
     @JsonProperty("photo_75")
     public String photo_75;
     @JsonProperty("photo_130")
@@ -41,6 +44,8 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "s")
     @JsonProperty("date")
     public Date date;
+
+    public int orderId;
 
     @Override
     public String toString() {
@@ -73,7 +78,7 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
     }
 
     public VkPhotoItem(Parcel in) {
-        String[] data = new String[7];
+        String[] data = new String[8];
         in.readStringArray(data);
 
         id = new Long(data[0]);
@@ -88,13 +93,14 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
         } catch (ParseException e) {
             date = null;
         }
+        orderId =  new Integer(data[7]);
     }
 
     public VkPhotoItem(){
 
     }
 
-    public VkPhotoItem(long id, String photo_75, String photo_130, String photo_1280, int width, int height, Date date) {
+    public VkPhotoItem(long id, String photo_75, String photo_130, String photo_1280, int width, int height, Date date, int orderId) {
         this.id = id;
         this.photo_75 = photo_75;
         this.photo_130 = photo_130;
@@ -102,6 +108,7 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
         this.width = width;
         this.height = height;
         this.date = date;
+        this.orderId = orderId;
     }
 
     @Override
@@ -112,7 +119,7 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(new String[]{id + "", photo_75, photo_130, photo_1280,
-                width + "", height + "", dateFormat.format( date )});
+                width + "", height + "", dateFormat.format( date ), orderId +""});
     }
 
     public static final Parcelable.Creator<VkPhotoItem> CREATOR = new Parcelable.Creator<VkPhotoItem>() {

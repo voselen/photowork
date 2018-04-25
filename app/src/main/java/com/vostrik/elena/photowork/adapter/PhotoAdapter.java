@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.vostrik.elena.photowork.Application;
 import com.vostrik.elena.photowork.R;
@@ -55,6 +56,9 @@ public class PhotoAdapter extends ArrayAdapter<VkPhotoItem> {
         if (convertView == null) {
             convertView = inflater.inflate(this.layout, parent, false);
             viewHolder = new ViewHolder(convertView);
+            viewHolder.imageView.setLayoutParams(new RelativeLayout.LayoutParams(MainActivity.SIZE_W, MainActivity.SIZE_H));
+            viewHolder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            viewHolder.imageView.setPadding(1, 1, 1, 0);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();

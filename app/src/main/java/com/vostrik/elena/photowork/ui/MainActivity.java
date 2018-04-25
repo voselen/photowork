@@ -68,7 +68,6 @@ public class MainActivity extends FragmentActivity {
     private void setSize() {
         Resources resources = getResources();
         DisplayMetrics dm = resources.getDisplayMetrics();
-
         SCREEN_WIDTH = dm.widthPixels;
         SCREEN_HEIGHT = dm.heightPixels;
         SIZE_W = SIZE_H = SCREEN_WIDTH / 3;
@@ -217,7 +216,6 @@ public class MainActivity extends FragmentActivity {
                 try {
                     Log.d(TAG,
                             contentProvider.loadJSONFromAsset(this));
-
                     Application.vkPhotos = contentProvider.getPhotoItemList();
                     Collections.sort(Application.vkPhotos, new Comparator<VkPhotoItem>() {
                         @Override

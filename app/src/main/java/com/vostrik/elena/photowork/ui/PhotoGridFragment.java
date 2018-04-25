@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 
 import com.vostrik.elena.photowork.Application;
 import com.vostrik.elena.photowork.R;
@@ -33,7 +32,6 @@ public class PhotoGridFragment extends Fragment {
     private static final String TAG = "PhotoGridFragment";
     public static GridView gridView;
     public static PhotoAdapter photoAdapter;
-    ProgressBar authProgressBar;
     public static AtomicInteger nextPage = new AtomicInteger(0);
     private static int mPreviousTotal = 0;
     private static final int lastPageId = Application.photoCount / Application.PHOTO_PER_PAGE + 1;
@@ -60,7 +58,6 @@ public class PhotoGridFragment extends Fragment {
 
         final View v = inflater.inflate(R.layout.gallery_fragment, container, false);
         gridView = (GridView) v.findViewById(R.id.gridView);
-        authProgressBar = (ProgressBar) v.findViewById(R.id.authProgressBar);
 
         //Если не загружено еще страниц, загружаем первую
         int size = Application.photoAdapterPhotos.size();
@@ -83,7 +80,6 @@ public class PhotoGridFragment extends Fragment {
         Log.d(TAG, "nextPage " + nextPage);
         photoAdapter.notifyDataSetChanged();
         gridView.invalidateViews();
-        authProgressBar.setVisibility(View.GONE);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -80,8 +80,6 @@ public class GetVkPhotoItemsTask extends AsyncTask<Integer, Void, Void> {
                     }
                     Application.vkPhotos.addAll(list);
                     Application.vkPhotos = new ArrayList<VkPhotoItem>(new HashSet<VkPhotoItem>(Application.vkPhotos));
-                    if (Application.vkPhotos != null)
-                        contentProvider.saveJSONtoFile(Application.vkPhotos);
                 }
 
                 @Override
@@ -107,7 +105,12 @@ public class GetVkPhotoItemsTask extends AsyncTask<Integer, Void, Void> {
                 return t1.date.compareTo(photoItem.date);
             }
         });
-
+        int weight = Application.vkPhotos.size() - 1;
+        for(int index = 0 ; weight >=0; weight--, index++){
+            Application.vkPhotos.get(index).setOrderId(weight);
+        }
+        if (Application.vkPhotos != null)
+            contentProvider.saveJSONtoFile(Application.vkPhotos);
         final FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.add(content, new PhotoGridFragment(), TAG);
         ft.commitAllowingStateLoss();//вместо commit(), чтобы избежать java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
