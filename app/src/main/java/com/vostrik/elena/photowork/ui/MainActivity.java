@@ -220,7 +220,7 @@ public class MainActivity extends FragmentActivity {
                     Collections.sort(Application.vkPhotos, new Comparator<VkPhotoItem>() {
                         @Override
                         public int compare(VkPhotoItem photoItem, VkPhotoItem t1) {
-                            return t1.date.compareTo(photoItem.date);
+                            return Integer.valueOf(t1.orderId).compareTo(photoItem.orderId);
                         }
                     });
                     if (Application.vkPhotos != null)
