@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Vk photo</string>
+    <string name="action_settings">Settings</string>
     <integer name="com_vk_sdk_AppId">6445301</integer>
 </resources>

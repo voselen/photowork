@@ -6,11 +6,14 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -51,7 +54,8 @@ import static android.os.Environment.isExternalStorageRemovable;
  * Created by Elena on 19.04.2018.
  */
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity//FragmentActivity
+{
     ////
     private final Object mDiskCacheLock = new Object();
     SharedPreferencesUtil sharedPreferencesUtil;
@@ -110,6 +114,8 @@ public class MainActivity extends FragmentActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         context = this;
         content = android.R.id.content;
         progressBar = (ProgressBar) findViewById(R.id.startProgressBar);
@@ -192,6 +198,27 @@ public class MainActivity extends FragmentActivity {
         return file;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onDestroy() {
@@ -274,9 +301,11 @@ public class MainActivity extends FragmentActivity {
                                 break;
                             }
                         }
-                        if (photoCount == 0)
+                        if (photoCount == 0) {
                             Toast.makeText(context,
                                     " У вас нет фотографий, на которых вы отмечены", Toast.LENGTH_LONG).show();
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -302,6 +331,7 @@ public class MainActivity extends FragmentActivity {
 
             @Override
             public void onError(VKError error) {
+                progressBar.setVisibility(View.INVISIBLE);
                 // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
                 Toast.makeText(context,
                         "Ошибка авторизации в ВКонтакте\nError code " + error.errorCode + "\tMessage " + error.errorMessage + "\tReason " + error.errorReason, Toast.LENGTH_LONG).show();
