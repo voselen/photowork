@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">PhotoWork</string>
+    <string name="app_name">Vk photo</string>
     <integer name="com_vk_sdk_AppId">6445301</integer>
 </resources>

@@ -113,6 +113,7 @@ public class MainActivity extends FragmentActivity {
         context = this;
         content = android.R.id.content;
         progressBar = (ProgressBar) findViewById(R.id.startProgressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         setSize();
 
@@ -202,7 +203,6 @@ public class MainActivity extends FragmentActivity {
     void getPhotos() {
         Log.d(TAG, "Start get sharedPref");
         Log.d(TAG, "sharedPreferencesUtil.getVkUserId() " + sharedPreferencesUtil.getVkUserId());
-        progressBar.setVisibility(View.VISIBLE);
         //если приложение открыто не первый раз
         if (sharedPreferencesUtil.getVkUserId() != null) {
             //если последняя дата обновления данных не больше одного дня

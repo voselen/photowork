@@ -47,9 +47,6 @@ public class ImageServiceUtil {
      * @return изображение
      */
     public static Bitmap getBitmap(int position, ImageView imageView, ProgressBar progressBar, PhotoType photoType, Context context) {
-        //Log.d(TAG, "Application.photos " + Application.vkPhotos.size());
-        Log.d(TAG, "Application.photoAdapterPhotos " + Application.photoAdapterPhotos.size());
-        //VkPhotoItem vkPhotoItem = Application.vkPhotos.get(position);
         VkPhotoItem vkPhotoItem = Application.photoAdapterPhotos.get(position);
         VkLoadPhotoItem vkLoadPhotoItem;
         Bitmap bitmap;
@@ -251,7 +248,7 @@ public class ImageServiceUtil {
     }
 
     private static Bitmap decodeImage(Bitmap bitmap) {
-        Log.d(TAG, "decodeImage image W " + bitmap.getWidth() + " H " + bitmap.getHeight());
+       // Log.d(TAG, "decodeImage image W " + bitmap.getWidth() + " H " + bitmap.getHeight());
         //bitmap = Bitmap.createScaledBitmap(bitmap, Application.SIZE_W, Application.SIZE_H, true);
         int width = MainActivity.SIZE_W;
         width = width > bitmap.getWidth() ? bitmap.getWidth() : width;
@@ -269,19 +266,19 @@ public class ImageServiceUtil {
         //нужно подрастянуть ширину
         {
             sizeW = (float) width / bitmap.getWidth();
-            Log.d(TAG, "size W " + sizeW);
+          //  Log.d(TAG, "size W " + sizeW);
             bitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * sizeW), (int) (bitmap.getHeight() * sizeW), true);
         } else if (width < bitmap.getWidth() && height > bitmap.getHeight()) {
             sizeW = (float) height / bitmap.getHeight();
-            Log.d(TAG, "size H " + sizeW);
+          //  Log.d(TAG, "size H " + sizeW);
             bitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * sizeW), (int) (bitmap.getHeight() * sizeW), true);
         } else if (width > bitmap.getWidth() && height > bitmap.getHeight()) {
             sizeW = (float) width / bitmap.getWidth();
-            Log.d(TAG, "size W " + sizeW);
+          //  Log.d(TAG, "size W " + sizeW);
             bitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * sizeW), (int) (bitmap.getHeight() * sizeW), true);
             if (height > bitmap.getHeight()) {
                 sizeW = (float) height / bitmap.getHeight();
-                Log.d(TAG, "size H " + sizeW);
+              //  Log.d(TAG, "size H " + sizeW);
                 bitmap = Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * sizeW), (int) (bitmap.getHeight() * sizeW), true);
             }
         }

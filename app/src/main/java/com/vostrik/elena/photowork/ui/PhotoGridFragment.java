@@ -56,7 +56,7 @@ public class PhotoGridFragment extends Fragment {
         //Если не загружено еще страниц, загружаем первую
         int size = Application.photoAdapterPhotos.size();
         if (size == 0) {
-            Log.d(TAG, "Application.vkPhotos = " + Application.vkPhotos.size());
+            //Log.d(TAG, "Application.vkPhotos = " + Application.vkPhotos.size());
             setAdapter(Application.vkPhotos.subList(0, Application.PHOTO_PER_PAGE));
         } else {
             setAdapter(Application.photoAdapterPhotos);
@@ -71,7 +71,6 @@ public class PhotoGridFragment extends Fragment {
 
         photoAdapter = new PhotoAdapter(getActivity(), R.layout.photo_image_view, list);
         gridView.setAdapter(photoAdapter);
-        Log.d(TAG, "nextPage " + nextPage);
         photoAdapter.notifyDataSetChanged();
         gridView.invalidateViews();
 
@@ -90,21 +89,20 @@ public class PhotoGridFragment extends Fragment {
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 // TODO Auto-generated method stub
                 int currentFirstVisPos = view.getFirstVisiblePosition();
+
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
-                Log.d(TAG, "(view.getLastVisiblePosition() + 1) " + (view.getLastVisiblePosition() + 1) +
-                        "\t totalItemCount " + totalItemCount + "\tmPreviousTotal " + mPreviousTotal);
                 if ((view.getLastVisiblePosition() + 1) == totalItemCount
                         && totalItemCount > mPreviousTotal
                         ) {
                     mPreviousTotal = totalItemCount;
                     nextPage.incrementAndGet();
 
-                    Log.d(TAG, "Application.photoCount " + Application.photoCount +
-                            "\t isLastPage " + isLastPage);
+                   // Log.d(TAG, "Application.photoCount " + Application.photoCount +
+                    //        "\t isLastPage " + isLastPage);
                     if (nextPage.get() > lastPageId) {
                         isLastPage = true;
                     }
@@ -122,8 +120,8 @@ public class PhotoGridFragment extends Fragment {
     public static void nextPage() {
         List<VkPhotoItem> sublist = Application.vkPhotos.subList(0, (nextPage.get() + 1) * Application.PHOTO_PER_PAGE);
         Application.photoAdapterPhotos  = new CopyOnWriteArrayList<>(sublist);//Collections.synchronizedList(sublist);
-        Log.d(TAG, "Application.photoAdapterPhotos go nextPage " + Application.photoAdapterPhotos.size());
-        Log.d(TAG, "(nextPage.get() + 1) * Application.PHOTO_PER_PAGE go nextPage " + (nextPage.get() + 1) * Application.PHOTO_PER_PAGE);
+    //    Log.d(TAG, "Application.photoAdapterPhotos go nextPage " + Application.photoAdapterPhotos.size());
+    //    Log.d(TAG, "(nextPage.get() + 1) * Application.PHOTO_PER_PAGE go nextPage " + (nextPage.get() + 1) * Application.PHOTO_PER_PAGE);
         photoAdapter.notifyDataSetChanged();
         gridView.invalidateViews();
     }

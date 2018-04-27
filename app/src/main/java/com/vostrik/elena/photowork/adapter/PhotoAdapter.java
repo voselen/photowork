@@ -41,7 +41,6 @@ public class PhotoAdapter extends ArrayAdapter<VkPhotoItem> {
     }
 
     public int getCount() {
-       // return Application.vkPhotos == null ? 0 : Application.vkPhotos.size();
         return Application.photoAdapterPhotos == null ? 0 : Application.photoAdapterPhotos.size();
     }
 
@@ -65,7 +64,7 @@ public class PhotoAdapter extends ArrayAdapter<VkPhotoItem> {
         }
         viewHolder.imageView.setMinimumWidth(MainActivity.SIZE_W);
         viewHolder.imageView.setMinimumHeight(MainActivity.SIZE_W);
-        Log.d(TAG, "getView position " + position);
+//        Log.d(TAG, "getView position " + position);
         viewHolder.imageView.setImageBitmap(null);
         viewHolder.progressBar.setVisibility(View.VISIBLE);
         ImageServiceUtil.getBitmap(position, viewHolder.imageView, viewHolder.progressBar, PhotoType.PREVIEW, context);

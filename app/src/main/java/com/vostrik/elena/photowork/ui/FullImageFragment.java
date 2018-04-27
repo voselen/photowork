@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import com.vostrik.elena.photowork.util.OnSwipeTouchListener;
 public class FullImageFragment extends Fragment {
     private static final String VK_PHOTO_IMAGE = VkPhotoItem.class.getName();
     private static final String VK_PHOTO_IMAGE_POSITION = "position";
+    private static final String TAG = "FullImageFragment";
     static VkPhotoItem photoItem;
     static int position;
     ImageView imageView;
@@ -35,14 +37,13 @@ public class FullImageFragment extends Fragment {
     Context context;
 
 
-
     public static FullImageFragment newInstance(int position) {
         final FullImageFragment f = new FullImageFragment();
         final Bundle args = new Bundle();
-
         photoItem = Application.vkPhotos.get(position);
         args.putParcelable(VK_PHOTO_IMAGE, photoItem);
         args.putInt(VK_PHOTO_IMAGE_POSITION, position);
+        Log.d(TAG, "put Int " +position);
         f.setArguments(args);
         return f;
     }
@@ -52,7 +53,10 @@ public class FullImageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         photoItem = getArguments() != null ? (VkPhotoItem) getArguments().getParcelable(VK_PHOTO_IMAGE) : null;
         position = getArguments() != null ? getArguments().getInt(VK_PHOTO_IMAGE_POSITION) : null;
+        Log.d(TAG, "onCreate position " + position);
         context = this.getActivity();
+        FullImageActivity activity = (FullImageActivity) getActivity();
+        activity.setPosition(position);
     }
 
     @Override
@@ -60,6 +64,7 @@ public class FullImageFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate and locate the main ImageView
         final View v = inflater.inflate(R.layout.full_image_fragment, container, false);
+        Log.d(TAG, "onCreateView position " + position);
         imageView = (ImageView) v.findViewById(R.id.full_image_view);
         progressBar = (ProgressBar) v.findViewById(R.id.bigPhotoProgressBar);
         textView = (TextView) v.findViewById(R.id.full_image_caption);
@@ -75,12 +80,12 @@ public class FullImageFragment extends Fragment {
         v.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             @Override
             public void onSwipeDown() {
-                //Toast.makeText(getActivity(), "Down", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
             public void onSwipeLeft() {
-                //Toast.makeText(getActivity(), "Left", Toast.LENGTH_SHORT).show();
+
                 if (position + 1 < Application.photoAdapterPhotos .size()) {
                     FragmentTransaction fragManager = getActivity().getSupportFragmentManager().beginTransaction();
                     fragManager.replace(android.R.id.content, FullImageFragment.newInstance(position + 1));
@@ -122,7 +127,7 @@ public class FullImageFragment extends Fragment {
 
         // Use the parent activity to load the image asynchronously into the ImageView (so a single
         // cache can be used over all pages in the ViewPager
-        if (FullImageActivity.class.isInstance(getActivity())) {
+       if (FullImageActivity.class.isInstance(getActivity())) {
             ImageServiceUtil.getBitmap(position, imageView, progressBar, PhotoType.BIG, context);
         }
 
