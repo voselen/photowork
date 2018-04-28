@@ -8,7 +8,7 @@
         android:id="@+id/about_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="@string/text_about"
         tools:layout_editor_absoluteX="52dp"
         tools:layout_editor_absoluteY="129dp" />
 </android.support.constraint.ConstraintLayout>

@@ -38,11 +38,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:background="@drawable/ic_close_white_48dp"
+            android:text="@string/action_close"
             android:shadowColor="#000000"
+            android:textColor="@android:color/primary_text_dark"
             android:shadowDx="2"
             android:shadowDy="2"
-            android:shadowRadius="2"/>
+            android:shadowRadius="2" android:background="@null" android:textSize="20sp"/>
 
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>
