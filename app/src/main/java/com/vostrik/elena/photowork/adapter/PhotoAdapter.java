@@ -17,6 +17,7 @@ import com.vostrik.elena.photowork.model.VkPhotoItem;
 import com.vostrik.elena.photowork.ui.MainActivity;
 import com.vostrik.elena.photowork.util.ImageServiceUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
 
 public class PhotoAdapter extends ArrayAdapter<VkPhotoItem> {
     private static final String TAG = "PhotoAdapter";
-    private LayoutInflater inflater;
+    private WeakReference<LayoutInflater> inflater;
     private int layout;
     Context context;
 
@@ -33,7 +34,7 @@ public class PhotoAdapter extends ArrayAdapter<VkPhotoItem> {
         super(context, resource, photos);
         this.context = context;
         this.layout = resource;
-        this.inflater = LayoutInflater.from(context);
+        this.inflater = new WeakReference < > (LayoutInflater.from(context));
        // Application.vkPhotos = photos;
         Application.photoAdapterPhotos  = photos;
         //Log.d(TAG, "Application.photos " + Application.vkPhotos.size());
@@ -53,7 +54,7 @@ public class PhotoAdapter extends ArrayAdapter<VkPhotoItem> {
 
         final ViewHolder viewHolder;
         if (convertView == null) {
-            convertView = inflater.inflate(this.layout, parent, false);
+            convertView = inflater.get().inflate(this.layout, parent, false);
             viewHolder = new ViewHolder(convertView);
             viewHolder.imageView.setLayoutParams(new RelativeLayout.LayoutParams(MainActivity.SIZE_W, MainActivity.SIZE_H));
             viewHolder.imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);

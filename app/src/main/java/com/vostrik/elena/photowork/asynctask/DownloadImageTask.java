@@ -20,6 +20,7 @@ import com.vostrik.elena.photowork.util.ImageServiceUtil;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -31,19 +32,19 @@ import java.net.URLConnection;
 public class DownloadImageTask extends AsyncTask<ImageView, Void, Bitmap> {
 
     private static final String TAG = "DownloadImageTask";
-    ImageView imageView = null;
+    WeakReference<ImageView> imageView = null;
     VkLoadPhotoItem photoItem = null;
-    Context context;
+    WeakReference<Context> context;
 
     public DownloadImageTask(Context context) {
-        this.context = context;
+        this.context = new WeakReference < > (context);
     }
 
     @Override
     protected Bitmap doInBackground(ImageView... imageViews) {
-        this.imageView = imageViews[0];
+        this.imageView = new WeakReference < > (imageViews[0]);
         Bitmap bitmap = null;
-        photoItem = (VkLoadPhotoItem) imageView.getTag();
+        photoItem = (VkLoadPhotoItem) imageView.get().getTag();
         if (photoItem.photoType == PhotoType.PREVIEW) {
             bitmap = ImageServiceUtil.getBitmapFromDiskCache(String.valueOf(photoItem.photoItem.id));
             if (bitmap == null) {
@@ -52,10 +53,10 @@ public class DownloadImageTask extends AsyncTask<ImageView, Void, Bitmap> {
                     bitmap = download_Image(photoItem.photoType == PhotoType.BIG ? photoItem.photoItem.photo_1280 : photoItem.photoItem.photo_75);
                 } catch (GetImageByUrlException e) {
                     Log.e(TAG, "GetImageByUrlException on preViewImage: " + e.getMessage());
-                    Drawable drawable = context.getResources().getDrawable(R.drawable.empty_photo);
+                    Drawable drawable = context.get().getResources().getDrawable(R.drawable.empty_photo);
                     bitmap = ((BitmapDrawable) drawable).getBitmap();
                 } catch (GetImageIOException e) {
-                    Drawable drawable = context.getResources().getDrawable(R.drawable.empty_photo);
+                    Drawable drawable = context.get().getResources().getDrawable(R.drawable.empty_photo);
                     bitmap = ((BitmapDrawable) drawable).getBitmap();
                 }
             } else {
@@ -68,10 +69,10 @@ public class DownloadImageTask extends AsyncTask<ImageView, Void, Bitmap> {
             bitmap = download_Image(photoItem.photoType == PhotoType.BIG ? photoItem.photoItem.photo_1280 : photoItem.photoItem.photo_75);
         } catch (GetImageByUrlException e) {
             Log.e(TAG, "GetImageByUrlException on BigImage: " + e.getMessage());
-            Drawable drawable = context.getResources().getDrawable(R.drawable.empty_photo);
+            Drawable drawable = context.get().getResources().getDrawable(R.drawable.empty_photo);
             bitmap = ((BitmapDrawable) drawable).getBitmap();
         } catch (GetImageIOException e) {
-            Drawable drawable = context.getResources().getDrawable(R.drawable.empty_photo);
+            Drawable drawable = context.get().getResources().getDrawable(R.drawable.empty_photo);
             bitmap = ((BitmapDrawable) drawable).getBitmap();
         }
         return bitmap;
@@ -93,7 +94,7 @@ public class DownloadImageTask extends AsyncTask<ImageView, Void, Bitmap> {
             if (photoItem.photoItem != null && ImageServiceUtil.getBitmapFromDiskCache(photoItem.photoItem.id + "") == null)
                 ImageServiceUtil.addBitmapToCache(photoItem.photoItem.id + "", result);
         }
-        imageView.setImageBitmap(result);
+        imageView.get().setImageBitmap(result);
         photoItem.progressBar.setVisibility(View.GONE);
     }
 

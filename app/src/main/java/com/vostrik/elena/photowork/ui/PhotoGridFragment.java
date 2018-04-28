@@ -56,7 +56,6 @@ public class PhotoGridFragment extends Fragment {
         //Если не загружено еще страниц, загружаем первую
         int size = Application.photoAdapterPhotos.size();
         if (size == 0) {
-            //Log.d(TAG, "Application.vkPhotos = " + Application.vkPhotos.size());
             setAdapter(Application.vkPhotos.subList(0, Application.PHOTO_PER_PAGE));
         } else {
             setAdapter(Application.photoAdapterPhotos);
@@ -64,6 +63,13 @@ public class PhotoGridFragment extends Fragment {
 
         Log.d(TAG, "after");
         return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+ //       RefWatcher refWatcher = Application.getRefWatcher(getActivity());
+ //       refWatcher.watch(this);
     }
 
     //Привязка Адаптера к GridView
@@ -101,8 +107,6 @@ public class PhotoGridFragment extends Fragment {
                     mPreviousTotal = totalItemCount;
                     nextPage.incrementAndGet();
 
-                   // Log.d(TAG, "Application.photoCount " + Application.photoCount +
-                    //        "\t isLastPage " + isLastPage);
                     if (nextPage.get() > lastPageId) {
                         isLastPage = true;
                     }
@@ -119,9 +123,7 @@ public class PhotoGridFragment extends Fragment {
 
     public static void nextPage() {
         List<VkPhotoItem> sublist = Application.vkPhotos.subList(0, (nextPage.get() + 1) * Application.PHOTO_PER_PAGE);
-        Application.photoAdapterPhotos  = new CopyOnWriteArrayList<>(sublist);//Collections.synchronizedList(sublist);
-    //    Log.d(TAG, "Application.photoAdapterPhotos go nextPage " + Application.photoAdapterPhotos.size());
-    //    Log.d(TAG, "(nextPage.get() + 1) * Application.PHOTO_PER_PAGE go nextPage " + (nextPage.get() + 1) * Application.PHOTO_PER_PAGE);
+        Application.photoAdapterPhotos = new CopyOnWriteArrayList<>(sublist);//Collections.synchronizedList(sublist);
         photoAdapter.notifyDataSetChanged();
         gridView.invalidateViews();
     }

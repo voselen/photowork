@@ -35,26 +35,35 @@ import static android.content.ContentValues.TAG;
  * Created by Elena on 24.04.2018.
  */
 
-public class GetVkPhotoItemsTask extends AsyncTask<Integer, Void, Void> {
+public class GetVkPhotoItemsTask extends AsyncTask<Integer, Void, Void>{
 
     int content;
     Context context;
     FragmentManager fragmentManager;
     ProgressBar progressBar;
     PhotoContentProvider contentProvider;
+    PhotoGridFragment photoGridFragment;
 
-    public GetVkPhotoItemsTask(int content, Context context,FragmentManager fragmentManager, ProgressBar progressBar, PhotoContentProvider contentProvider) {
+    public void setStopped(boolean stopped) {
+        isStopped = stopped;
+        cancel(true);
+    }
+
+    boolean isStopped = false;
+
+    public GetVkPhotoItemsTask(int content, Context context, FragmentManager fragmentManager, ProgressBar progressBar, PhotoContentProvider contentProvider, PhotoGridFragment photoGridFragment) {
         this.content = content;
         this.context = context;
         this.fragmentManager = fragmentManager;
         this.progressBar = progressBar;
         this.contentProvider = contentProvider;
+        this.photoGridFragment = photoGridFragment;
     }
 
     @Override
     protected Void doInBackground(Integer... integers) {
         int photoCount = integers[0];
-        int pagesCount = photoCount > 1000 ? (photoCount / Application.MAX_PHOTO_COUNT + 1) : 1;
+        int pagesCount = photoCount > Application.MAX_PHOTO_COUNT  ? (photoCount / Application.MAX_PHOTO_COUNT + 1) : 1;
         int offset = 0;
         for (int i = 0; i < pagesCount; i++) {
             offset = i == 0 ? i : i * Application.MAX_PHOTO_COUNT + 1;
@@ -106,13 +115,13 @@ public class GetVkPhotoItemsTask extends AsyncTask<Integer, Void, Void> {
             }
         });
         int weight = Application.vkPhotos.size() - 1;
-        for(int index = 0 ; weight >=0; weight--, index++){
+        for (int index = 0; weight >= 0; weight--, index++) {
             Application.vkPhotos.get(index).setOrderId(weight);
         }
         if (Application.vkPhotos != null)
             contentProvider.saveJSONtoFile(Application.vkPhotos);
         final FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.add(content, new PhotoGridFragment(), TAG);
+        ft.add(content, photoGridFragment, TAG);
         ft.commitAllowingStateLoss();//вместо commit(), чтобы избежать java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
 
         return null;

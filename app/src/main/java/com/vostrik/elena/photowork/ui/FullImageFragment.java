@@ -143,6 +143,8 @@ public class FullImageFragment extends Fragment {
         if (imageView != null) {
             imageView.setImageDrawable(null);
         }
+//        RefWatcher refWatcher = Application.getRefWatcher(getActivity());
+//        refWatcher.watch(this);
     }
 
 }

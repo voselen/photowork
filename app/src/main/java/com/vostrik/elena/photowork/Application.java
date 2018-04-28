@@ -1,10 +1,13 @@
 package com.vostrik.elena.photowork;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
@@ -24,6 +27,9 @@ public class Application extends android.app.Application {
 
     //ограничение Vk.APi
     public static final int MAX_PHOTO_COUNT = 1000;
+
+    //Файл, в котором хранится предыдущий ответ на запрос списка фотографий
+    public static final String DATA_FILE_NAME = "photoVkItems.json";
 
     public static int photoCount = 0;
     //Количество фото, загружаемых за раз (примерно равно количество фотографий на одном экране)
@@ -53,9 +59,18 @@ public class Application extends android.app.Application {
         }
     };
 
+    private RefWatcher refWatcher;
+
+    public static RefWatcher getRefWatcher(Context context) {
+        Application application = (Application) context.getApplicationContext();
+        return application.refWatcher;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        if (BuildConfig.DEBUG)
+            LeakCanary.install(this);
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);
         vkPhotos = new ArrayList<>();

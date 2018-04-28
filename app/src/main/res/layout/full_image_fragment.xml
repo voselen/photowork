@@ -37,6 +37,7 @@
             android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:background="@drawable/ic_close_white_48dp"
             android:shadowColor="#000000"
             android:shadowDx="2"

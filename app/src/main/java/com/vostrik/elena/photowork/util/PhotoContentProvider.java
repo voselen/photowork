@@ -1,6 +1,5 @@
 package com.vostrik.elena.photowork.util;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,13 +22,13 @@ import java.util.List;
 
 public class PhotoContentProvider {
     private static final String TAG = "PhotoContentProvider";
-    private final String DATA_FILE_NAME = "photoVkItems.json";
 
     String pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 
     //File logFile;
-    Context context;
+    //Context context;
+    StreamReaderWriter streamReaderWriter;
 
     public List<VkPhotoItem> getPhotoItemList() {
         return photoItemList;
@@ -38,15 +36,14 @@ public class PhotoContentProvider {
 
     List<VkPhotoItem> photoItemList;
 
-    public PhotoContentProvider(Context context) {
-        this.context = context;
+    public PhotoContentProvider(StreamReaderWriter streamReaderWriter) {
+        this.streamReaderWriter = streamReaderWriter;
     }
 
-    public String loadJSONFromAsset(Context context) {
+    public String loadJSONFromAsset() {
         String json = null;
         try {
-            InputStream is = context.openFileInput(DATA_FILE_NAME);
-
+            InputStream is = streamReaderWriter.getInputStream();
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -70,13 +67,9 @@ public class PhotoContentProvider {
 
     public void saveJSONtoFile(List<VkPhotoItem> list) {
         try {
-            FileOutputStream fos = context.openFileOutput(DATA_FILE_NAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = (FileOutputStream) streamReaderWriter.getOutputStream();
             ObjectMapper mapper = new ObjectMapper();
-            //mapper.setDateFormat(dateFormat);
             // Writing to a file
-            Log.d(TAG, Arrays.toString(list.toArray()));
-            //mapper.writeValue(fos, list);
-            //mapper.writeValueAsString(list);
             mapper.writer(dateFormat);
             mapper.writeValue(fos, list);
         } catch (FileNotFoundException e) {

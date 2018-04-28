@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -35,11 +34,14 @@ import com.vostrik.elena.photowork.model.VkPhotoItem;
 import com.vostrik.elena.photowork.util.DiskLruCache;
 import com.vostrik.elena.photowork.util.PhotoContentProvider;
 import com.vostrik.elena.photowork.util.SharedPreferencesUtil;
+import com.vostrik.elena.photowork.util.StreamReaderWriter;
+import com.vostrik.elena.photowork.util.impl.ContextStreamReaderWriter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
     public static int SCREEN_WIDTH = 0;
     public static int SIZE_W = 0;
     public static int SIZE_H = 0;
+    PhotoGridFragment photoGridFragment;
 
     private void setSize() {
         Resources resources = getResources();
@@ -114,8 +117,6 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         context = this;
         content = android.R.id.content;
         progressBar = (ProgressBar) findViewById(R.id.startProgressBar);
@@ -126,11 +127,14 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
         sharedPreferencesUtil = new SharedPreferencesUtil(getPreferences(MODE_PRIVATE));
         sharedPreferencesUtil.getPreferences();
 
-        contentProvider = new PhotoContentProvider(context);
+        StreamReaderWriter streamReaderWriter = new ContextStreamReaderWriter(context, Application.DATA_FILE_NAME);
+
+        contentProvider = new PhotoContentProvider(streamReaderWriter);
 
         // Запускаем дисковый кэш в отдельном потоке
         File cacheDir = getDiskCacheDir(this, DISK_CACHE_SUBDIR);
-        new InitDiskCacheTask().execute(cacheDir);
+        InitDiskCacheTask initDiskCacheTask =  new InitDiskCacheTask();
+        initDiskCacheTask.execute(cacheDir);
 
 
         if (getSupportFragmentManager().findFragmentByTag(TAG) == null) {
@@ -140,6 +144,7 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
                     switch (res) {
                         case LoggedOut:
                             //попытаться войти в ВК
+                            progressBar.setVisibility(View.INVISIBLE);
                             VKSdk.login(MainActivity.this, sMyScope);
                             if (VKSdk.isLoggedIn()) {
                                 //запрос фоток пользователя
@@ -213,11 +218,59 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_clearcash: {
+                try {
+                    //удаляем дисковый кэш
+                    Application.mDiskLruCache.flush();
+                    Application.mDiskLruCache.delete();
+                    // Запускаем дисковый кэш в отдельном потоке
+                    File cacheDir = getDiskCacheDir(this, DISK_CACHE_SUBDIR);
+
+                    InitDiskCacheTask initDiskCacheTask =  new InitDiskCacheTask();
+                    initDiskCacheTask.execute(cacheDir);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(this, "Cache directory was flushed succesfully!", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            case R.id.action_logout: {
+
+                //
+                VKSdk.logout();
+                //stop all runnig tasks
+                stopAllRunnigTasks();
+                if (!VKSdk.isLoggedIn()) {
+
+                    Toast.makeText(this, "You successfully logout from VK", Toast.LENGTH_SHORT).show();
+                    VKSdk.login(MainActivity.this, sMyScope);
+                    if (VKSdk.isLoggedIn()) {
+                        //запрос фоток пользователя
+                        Log.d(TAG, "After Logged in!");
+                        getPhotos();
+
+                    }
+                }
+                return true;
+            }
+            case R.id.action_about: {
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                return true;
+            }
+
         }
 
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void stopAllRunnigTasks() {
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        ft.remove(photoGridFragment);
+        ft.commitAllowingStateLoss();
     }
 
     @Override
@@ -241,8 +294,7 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
                 getVkPhotos();
             } else {
                 try {
-                    Log.d(TAG,
-                            contentProvider.loadJSONFromAsset(this));
+                    Log.d(TAG, contentProvider.loadJSONFromAsset());
                     Application.vkPhotos = contentProvider.getPhotoItemList();
                     Collections.sort(Application.vkPhotos, new Comparator<VkPhotoItem>() {
                         @Override
@@ -253,12 +305,12 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
                     if (Application.vkPhotos != null)
                         contentProvider.saveJSONtoFile(Application.vkPhotos);
                     Application.photoCount = Application.vkPhotos.size();
+                    photoGridFragment = new PhotoGridFragment();
                     final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.add(content, new PhotoGridFragment(), TAG);
+                    ft.add(content, photoGridFragment, TAG);
                     ft.commitAllowingStateLoss();//вместо commit(), чтобы избежать java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
-                }
-                catch (Exception e)
-                        //если не удалось загрузить файл со списком, то запрашиваем новый
+                } catch (Exception e)
+                //если не удалось загрузить файл со списком, то запрашиваем новый
                 {
                     sharedPreferencesUtil.setLastScanDate(new Date());
                     getVkPhotos();
@@ -273,7 +325,9 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
 
     void getVkPhotoItems(int photoCount) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        GetVkPhotoItemsTask getVkPhotoItemsTask = new GetVkPhotoItemsTask(content, context, fragmentManager, progressBar, contentProvider);
+        photoGridFragment = new PhotoGridFragment();
+        GetVkPhotoItemsTask getVkPhotoItemsTask =
+                new GetVkPhotoItemsTask(content, context, fragmentManager, progressBar, contentProvider, photoGridFragment);
         getVkPhotoItemsTask.execute(photoCount);
     }
 
@@ -341,7 +395,6 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
             }
         })) {
             super.onActivityResult(requestCode, resultCode, data);
-
         }
     }
 
