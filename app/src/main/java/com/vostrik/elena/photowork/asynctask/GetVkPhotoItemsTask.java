@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -105,7 +104,8 @@ public class GetVkPhotoItemsTask extends AsyncTask<Integer, Void, Void>{
 
             });
 
-            progressBar.setVisibility(View.VISIBLE);
+            //progressBar.setVisibility(View.VISIBLE);
+            //catch exception:
         }
 
         Collections.sort(Application.vkPhotos, new Comparator<VkPhotoItem>() {
@@ -118,7 +118,7 @@ public class GetVkPhotoItemsTask extends AsyncTask<Integer, Void, Void>{
         for (int index = 0; weight >= 0; weight--, index++) {
             Application.vkPhotos.get(index).setOrderId(weight);
         }
-        if (Application.vkPhotos != null)
+        if (Application.vkPhotos != null && Application.vkPhotos.size()>0)
             contentProvider.saveJSONtoFile(Application.vkPhotos);
         final FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.add(content, photoGridFragment, TAG);

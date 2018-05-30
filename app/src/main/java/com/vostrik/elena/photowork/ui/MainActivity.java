@@ -259,7 +259,6 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
                 startActivity(intent);
                 return true;
             }
-
         }
 
 
@@ -343,7 +342,7 @@ public class MainActivity extends AppCompatActivity//FragmentActivity
                         JSONArray jsonArray = response.json.getJSONArray("response");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             if (jsonArray.getJSONObject(i).has("id")) {
-                                Log.d(TAG, "Ste userID " + jsonArray.getJSONObject(i).getInt("id"));
+                                Log.d(TAG, "Set userID " + jsonArray.getJSONObject(i).getInt("id"));
                                 sharedPreferencesUtil.setVkUserId(String.valueOf(jsonArray.getJSONObject(i).getInt("id")));
                             }
                             if (jsonArray.getJSONObject(i).has("counters")) {

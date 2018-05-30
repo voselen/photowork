@@ -7,5 +7,6 @@
     <string name="action_logout">Vk Logout</string>
     <string name="action_close">Close</string>
     <string name="text_about">Vk photo is an application to get photos from vk.com where user is attached</string>
+    <string name="share">Share</string>
     <integer name="com_vk_sdk_AppId">6445301</integer>
 </resources>

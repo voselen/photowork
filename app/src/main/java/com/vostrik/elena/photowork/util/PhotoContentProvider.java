@@ -1,5 +1,7 @@
 package com.vostrik.elena.photowork.util;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -16,18 +18,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by Elena on 23.04.2018.
  */
 
 public class PhotoContentProvider {
+    String pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    SimpleDateFormat dateFormat = new SimpleDateFormat(
+            pattern
+    );
+
     private static final String TAG = "PhotoContentProvider";
 
-    String pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-
-    //File logFile;
-    //Context context;
     StreamReaderWriter streamReaderWriter;
 
     public List<VkPhotoItem> getPhotoItemList() {
@@ -40,20 +43,16 @@ public class PhotoContentProvider {
         this.streamReaderWriter = streamReaderWriter;
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = streamReaderWriter.getInputStream();
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
+        String result = null;
+        try (InputStream is = streamReaderWriter.getInputStream()) {
+
             ObjectMapper mapper = new ObjectMapper();
-            mapper.setDateFormat(dateFormat);
-            photoItemList = mapper.readValue(json,
-                    new TypeReference<ArrayList<VkPhotoItem>>() {
-                    });
+
+            photoItemList = mapper.readValue(is, new TypeReference<ArrayList<VkPhotoItem>>() {
+            });
+            if (photoItemList.size() > 0) result = "OK";
             Log.d(TAG, "photoItemList.size() " + photoItemList.size());
 
         } catch (FileNotFoundException ex) {
@@ -62,16 +61,17 @@ public class PhotoContentProvider {
             ex.printStackTrace();
             return null;
         }
-        return json;
+        return result;
     }
 
     public void saveJSONtoFile(List<VkPhotoItem> list) {
         try {
+            Log.d(TAG, "saveJSONtoFile photoItemList.size() " + list.size());
             FileOutputStream fos = (FileOutputStream) streamReaderWriter.getOutputStream();
             ObjectMapper mapper = new ObjectMapper();
-            // Writing to a file
-            mapper.writer(dateFormat);
             mapper.writeValue(fos, list);
+            Log.d(TAG, "after save file");
+            //Files.copy(source.toPath(), dest.toPath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (JsonGenerationException e) {

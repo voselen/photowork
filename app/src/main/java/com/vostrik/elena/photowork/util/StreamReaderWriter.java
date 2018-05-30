@@ -1,6 +1,7 @@
 package com.vostrik.elena.photowork.util;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -9,6 +10,6 @@ import java.io.OutputStream;
  */
 
 public interface StreamReaderWriter {
-    InputStream getInputStream() throws FileNotFoundException;
-    OutputStream getOutputStream() throws FileNotFoundException;
+    InputStream getInputStream() throws IOException;
+    OutputStream getOutputStream() throws IOException;
 }

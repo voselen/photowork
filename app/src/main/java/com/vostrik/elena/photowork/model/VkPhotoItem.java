@@ -4,9 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.vostrik.elena.photowork.util.DateSerializer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,10 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
+    String pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    SimpleDateFormat dateFormat = new SimpleDateFormat(//"yyyy.MM.dd G 'at' HH:mm:ss z"
+            pattern
+    );
 
     @JsonProperty("id")
     public long id;
@@ -41,10 +45,11 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
     @JsonProperty("height")
     public int height;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "s")
+    @JsonSerialize(using=DateSerializer.class)
     @JsonProperty("date")
     public Date date;
 
+    @JsonProperty("orderId")
     public int orderId;
 
     @Override
@@ -93,10 +98,10 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
         } catch (ParseException e) {
             date = null;
         }
-        orderId =  new Integer(data[7]);
+        orderId = new Integer(data[7]);
     }
 
-    public VkPhotoItem(){
+    public VkPhotoItem() {
 
     }
 
@@ -119,7 +124,7 @@ public class VkPhotoItem implements Comparable<VkPhotoItem>, Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(new String[]{id + "", photo_75, photo_130, photo_1280,
-                width + "", height + "", dateFormat.format( date ), orderId +""});
+                width + "", height + "", dateFormat.format(date), orderId + ""});
     }
 
     public static final Parcelable.Creator<VkPhotoItem> CREATOR = new Parcelable.Creator<VkPhotoItem>() {

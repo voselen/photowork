@@ -105,12 +105,10 @@ public class FullImageFragment extends Fragment {
 
             @Override
             public void onSwipeUp() {
-                //Toast.makeText(getActivity(), "Up", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSwipeRight() {
-                //Toast.makeText(getActivity(), "Right", Toast.LENGTH_SHORT).show();
                 if (position - 1 >= 0) {
                     FragmentTransaction fragManager = getActivity().getSupportFragmentManager().beginTransaction();
                     fragManager.replace(android.R.id.content, FullImageFragment.newInstance(position - 1));
@@ -143,8 +141,6 @@ public class FullImageFragment extends Fragment {
         if (imageView != null) {
             imageView.setImageDrawable(null);
         }
-//        RefWatcher refWatcher = Application.getRefWatcher(getActivity());
-//        refWatcher.watch(this);
     }
 
 }
