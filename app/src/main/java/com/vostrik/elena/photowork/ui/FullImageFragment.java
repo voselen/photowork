@@ -1,7 +1,12 @@
 package com.vostrik.elena.photowork.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -12,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vostrik.elena.photowork.Application;
 import com.vostrik.elena.photowork.R;
@@ -19,6 +25,10 @@ import com.vostrik.elena.photowork.model.PhotoType;
 import com.vostrik.elena.photowork.model.VkPhotoItem;
 import com.vostrik.elena.photowork.util.ImageServiceUtil;
 import com.vostrik.elena.photowork.util.OnSwipeTouchListener;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Фрагмент, отображающий увеличенное изображение
@@ -77,6 +87,18 @@ public class FullImageFragment extends Fragment {
             }
         });
 
+        // listeners of our two buttons
+        View.OnClickListener handler = new View.OnClickListener() {
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.buttonShareImage:
+                        shareImage();
+                        break;
+                }
+            }
+        };
+        v.findViewById(R.id.buttonShareImage).setOnClickListener(handler);
+
         v.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             @Override
             public void onSwipeDown() {
@@ -117,6 +139,36 @@ public class FullImageFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    // Returns the URI path to the Bitmap displayed in specified ImageView
+    public Uri getLocalBitmapUri(Bitmap bmp) {
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+            File file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            // **Warning:** This will fail for API >= 24, use a FileProvider as shown below instead.
+            bmpUri = Uri.fromFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
+    }
+    private void shareImage() {
+        if(((BitmapDrawable)imageView.getDrawable()).getBitmap()!=null) {
+            // Construct a ShareIntent with link to image
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(((BitmapDrawable)imageView.getDrawable()).getBitmap()));
+            shareIntent.setType("image/*");
+            // Launch sharing dialog for image
+            startActivity(Intent.createChooser(shareIntent, "Share Image"));
+        }
+        else
+            Toast.makeText(getActivity(), "Дождитесь окончания загрузки изображения", Toast.LENGTH_SHORT);
     }
 
     @Override

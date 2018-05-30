@@ -18,7 +18,15 @@
             android:id="@+id/full_image_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
-
+        <ImageButton
+            android:id="@+id/buttonShareImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:src="@android:drawable/ic_menu_share"
+            android:background="@drawable/vk_gray_transparent_shape"
+            android:layout_alignParentTop="true"
+             />
         <TextView
             android:id="@+id/full_image_caption"
             android:layout_width="wrap_content"
